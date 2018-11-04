@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -25,7 +26,7 @@ public class Vuforia extends LinearOpMode {
     OpenGLMatrix lastKnownLocation;
     OpenGLMatrix phoneLocation;
 
-    public static final String VUFORIA_KEY = **
+    public static final String VUFORIA_KEY = "";
 
 
     @Override
@@ -33,7 +34,7 @@ public class Vuforia extends LinearOpMode {
     {
         setupVuforia();
 
-        lastKnownLocation = createMatrix(0,0,0,0,0,0)
+        lastKnownLocation = createMatrix(0,0,0,0,0,0);
 
         waitForStart();
 
@@ -43,7 +44,7 @@ public class Vuforia extends LinearOpMode {
         {
             OpenGLMatrix latestLocation =listener.getUpdatedRobotLocation();
 
-            if (latestLocation = null)
+            if (latestLocation == null)
                 lastKnownLocation = latestLocation;
 
             telemetry.addData("tracking" + target.getName(), listener.isVisible());
@@ -63,7 +64,7 @@ public class Vuforia extends LinearOpMode {
 
         visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("FTC_2018");
 
-        target = visionTargets.get(0)
+        target = visionTargets.get(0);
         target.setName("BluePerimeter");
         target.setLocation(createMatrix(0,0,0,0,0,0));
 
@@ -76,7 +77,8 @@ public class Vuforia extends LinearOpMode {
     public OpenGLMatrix createMatrix(float x, float y, float z,float u, float v, float w)
     {
         return OpenGLMatrix.translation(x,y,z).
-                multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.xyz,AngleUnit.DEGREES, u, v, w));
+                multiplied(Orientation.getRotationMatrix(
+                        AxesReference.EXTRINSIC, AxesOrder.XYX,  AngleUnit.DEGREES, u, v, w));
     }
 
     public String formatMatrix(OpenGLMatrix matrix)
