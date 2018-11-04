@@ -68,15 +68,56 @@ public class AutonomousTutorial extends LinearOpMode {
         motorRight.setPower(power);
         motorLeft.setTargetPosition(getEncoderClicks(distance));
         motorRight.setTargetPosition(getEncoderClicks(distance));
+        motorRight.setPower(0.0);
+        motorLeft.setPower(0.0);
+
+        while (opModeIsActive() && motorLeft.isBusy() && motorRight.isBusy())
+        {
+            telemetry.addData("encoder-fwd" , motorLeft.getCurrentPosition()
+                    + "busy" + motorLeft.isBusy() + motorRight.getCurrentPosition()
+                    + "busy" + motorRight.isBusy());
+            telemetry.update();
+            idle();
+        }
+
 
     }
 
     public void TurnLeft( double degrees, double power)
     {
+        double robotDiam = 10.0;
+        double robotCirc = robotDiam * Math.PI;
+        double turn = robotCirc * (degrees / 360);
+        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRight.setPower(power);
+        motorRight.setTargetPosition(getEncoderClicks(turn));
+        motorRight.setPower(0.0);
+
+        while (opModeIsActive() && motorRight.isBusy())
+        {
+            telemetry.addData("encoder-turn" , motorRight.getCurrentPosition() + "busy" + motorRight.isBusy());
+            telemetry.update();
+            idle();
+        }
 
     }
 
-    public void TurnRight(double degree, double power) {
+    public void TurnRight(double degrees, double power) {
+
+        double robotDiam = 10.0;
+        double robotCirc = robotDiam * Math.PI;
+        double turn = robotCirc * (degrees / 360);
+        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeft.setPower(power);
+        motorLeft.setTargetPosition(getEncoderClicks(turn));
+        motorLeft.setPower(0.0);
+
+        while (opModeIsActive() && motorLeft.isBusy())
+        {
+            telemetry.addData("encoder-turn" , motorLeft.getCurrentPosition() + "busy" + motorLeft.isBusy());
+            telemetry.update();
+            idle();
+        }
 
     }
 
