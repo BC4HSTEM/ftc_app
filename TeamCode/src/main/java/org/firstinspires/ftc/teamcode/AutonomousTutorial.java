@@ -93,13 +93,28 @@ public class AutonomousTutorial extends LinearOpMode {
 
     }
 
-    public void TurnLeft( double degrees, double power)
+    public void TurnLeft( double degrees, double power, boolean turnStyle)
     {
         double turn = ROBOT_CIRC * (degrees / 360);
-        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRight.setPower(power);
-        motorRight.setTargetPosition(getEncoderClicks(turn));
+        if (turnStye == true)
+        {
+            motorLeft.setDirection(DcMotor.Direction.FOREWARD);
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorRight.setPower(power);
+            motorRight.setTargetPosition(getEncoderClicks(turn));
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setPower(power);
+            motorLeft.setTargetPosition(getEncoderClicks(turn));
+
+        } else {
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorRight.setPower(power);
+            motorRight.setTargetPosition(getEncoderClicks(turn));
+        }
+        motorLeft.setPower(0.0);
         motorRight.setPower(0.0);
+
+
 
         while (opModeIsActive() && motorRight.isBusy())
         {
@@ -110,15 +125,25 @@ public class AutonomousTutorial extends LinearOpMode {
 
     }
 
-    public void TurnRight(double degrees, double power) {
+    public void TurnRight(double degrees, double power, boolean turnStyle) {
 
-        double robotDiam = 10.0;
-        double robotCirc = robotDiam * Math.PI;
-        double turn = robotCirc * (degrees / 360);
+
+        double turn = ROBOT_CIRC * (degrees / 360);
+        if (turnStye == true) {
+            motorRight.setDirection(DcMotor.Direction.REVERSE);
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorRight.setPower(power);
+            motorRight.setTargetPosition(getEncoderClicks(turn));
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setPower(power);
+            motorLeft.setTargetPosition(getEncoderClicks(turn));
+        } else{
         motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeft.setPower(power);
-        motorLeft.setTargetPosition(getEncoderClicks(turn));
+        motorLeft.setTargetPosition(getEncoderClicks(turn));}
+
         motorLeft.setPower(0.0);
+        motorRight.setPower(0.0);
 
         while (opModeIsActive() && motorLeft.isBusy())
         {
@@ -128,6 +153,8 @@ public class AutonomousTutorial extends LinearOpMode {
         }
 
     }
+
+
 
 //Adding a comment to test commit from Windows CL
 
