@@ -14,6 +14,8 @@ public class AutonomousTutorial extends LinearOpMode {
 
     private DcMotor motorLeft;
     private DcMotor motorRight;
+    private DcMotor armLeft;
+    private DcMotor armRight;
 
     private Servo armServo;
 
@@ -34,6 +36,8 @@ public class AutonomousTutorial extends LinearOpMode {
     {
         motorLeft = hardwareMap.dcMotor.get("leftMotor");
         motorRight = hardwareMap.dcMotor.get("rightMotor");
+        armLeft = hardwareMap.dcMotor.get("leftArm");
+        armRight = hardwareMap.dcMotor.get("rightArm");
 
         //one of the motors will be mounted backwards, so it should be reversed.
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
