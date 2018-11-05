@@ -58,6 +58,8 @@ public class AutonomousTutorial extends LinearOpMode {
         Drive(-30, -0.8);
     }
 
+
+
     public static int getEncoderClicks (double distanceInCM) // Distance in centimeters
      {
         int outputClicks = (int)Math.floor(CLICKS_PER_CM * distanceInCM);
