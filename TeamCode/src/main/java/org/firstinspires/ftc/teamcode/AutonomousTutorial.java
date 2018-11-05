@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-/*Autonompus Code:
+/*Autonomous Code:
 This code is assuming that the left motor is mounted backwards. If the right motor is mounted
 backwards, commend out the line motorLeft.setDirection(DcMotor.Direction.REVERSE); and un-commend
 the line motorRight.setDirection(DcMotor.Direction.REVERSE);
 */
-@Autonomous(name = "Tele-Op Tutorial", group = "Tutorials")
+@Autonomous(name = "Auto01", group = "Autonomous")
 public class AutonomousTutorial extends LinearOpMode {
 
     private DcMotor motorLeft;
@@ -17,9 +17,17 @@ public class AutonomousTutorial extends LinearOpMode {
 
     private Servo armServo;
 
+    //Static Variables
+
     private static final double ARM_RETRACTED_POSITION = 0.2;
     private static final double ARM_EXTENDED_POSITION = 0.8;
-    private static final int ENCODER_CLICKS = 2240;
+    private static final int DRIVE_ENCODER_CLICKS = 2240;
+    private static final int ARM_ENCODER_CLICKS = 2240;
+    private static final double ROBOT_DIAM = 10.2; // Robot diameter in cm
+    private static final double ROBOT_CIRC = ROBOT_DIAM * Math.PI;
+    private static final double WHEEL_DIAM = 3.7; //Wheel diameter in cm
+    private static final double WHEEL_CIRC = WHEEL_DIAM * Math.PI;
+    private static final double CLICKS_PER_CM = DRIVE_ENCODER_CLICKS / WHEEL_CIRC;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -46,18 +54,14 @@ public class AutonomousTutorial extends LinearOpMode {
         Drive(-30, -0.8);
     }
 
-    public static int getEncoderClicks (double distance) // Distance in centimeters
+    public static int getEncoderClicks (double distanceInCM) // Distance in centimeters
      {
-        //Wheel diameter in centimeters,
-        double wheelDiam = 10.0;
-        double wheelCircum = Math.PI * wheelDiam;
-        double clicksPerCm = ENCODER_CLICKS / wheelCircum;
-        int outputClicks = (int)Math.floor(clicksPerCm * distance);
+        int outputClicks = (int)Math.floor(CLICKS_PER_CM * distanceInCM);
 
         return outputClicks;
     }
 
-    public void Drive( double distance, double power)
+    public void Drive( double distanceInCM, double power)
     {
         /* Entering positive values into distance and power will drive the robot forward. Entering
         negative values will drive the robot backward.
@@ -66,8 +70,8 @@ public class AutonomousTutorial extends LinearOpMode {
         motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeft.setPower(power);
         motorRight.setPower(power);
-        motorLeft.setTargetPosition(getEncoderClicks(distance));
-        motorRight.setTargetPosition(getEncoderClicks(distance));
+        motorLeft.setTargetPosition(getEncoderClicks(distanceInCM));
+        motorRight.setTargetPosition(getEncoderClicks(distanceInCM));
         motorRight.setPower(0.0);
         motorLeft.setPower(0.0);
 
@@ -85,9 +89,7 @@ public class AutonomousTutorial extends LinearOpMode {
 
     public void TurnLeft( double degrees, double power)
     {
-        double robotDiam = 10.0;
-        double robotCirc = robotDiam * Math.PI;
-        double turn = robotCirc * (degrees / 360);
+        double turn = ROBOT_CIRC * (degrees / 360);
         motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRight.setPower(power);
         motorRight.setTargetPosition(getEncoderClicks(turn));
@@ -95,7 +97,7 @@ public class AutonomousTutorial extends LinearOpMode {
 
         while (opModeIsActive() && motorRight.isBusy())
         {
-            telemetry.addData("encoder-turn" , motorRight.getCurrentPosition() + "busy" + motorRight.isBusy());
+            telemetry.addData("encoder-turn-left" , motorRight.getCurrentPosition() + "busy" + motorRight.isBusy());
             telemetry.update();
             idle();
         }
@@ -114,7 +116,7 @@ public class AutonomousTutorial extends LinearOpMode {
 
         while (opModeIsActive() && motorLeft.isBusy())
         {
-            telemetry.addData("encoder-turn" , motorLeft.getCurrentPosition() + "busy" + motorLeft.isBusy());
+            telemetry.addData("encoder-turn-right" , motorLeft.getCurrentPosition() + "busy" + motorLeft.isBusy());
             telemetry.update();
             idle();
         }
