@@ -67,8 +67,7 @@ public class AutonomousTutorial extends LinearOpMode {
         return outputClicks;
     }
 
-    public void Drive( double distanceInCM, double power)
-    {
+    public void Drive( double distanceInCM, double power) throws InterruptedException {
         /* Entering positive values into distance and power will drive the robot forward. Entering
         negative values will drive the robot backward.
          */
@@ -92,18 +91,18 @@ public class AutonomousTutorial extends LinearOpMode {
 
         while(motorLeft.isBusy() && motorRight.isBusy())
         {
-            a=motorRight.getPosition();
+            int a=motorRight.getCurrentPosition();
             Thread.sleep(200);
-            b=motorRight.getPosition();
+            int b=motorRight.getCurrentPosition();
             if (a == b) {
                 motorRight.setPower(0.0);
 
             }
 
-            a=motorLeft.getPosition();
+            int c=motorLeft.getCurrentPosition();
             Thread.sleep(200);
-            b=motorLeft.getPosition();
-            if (a == b) {
+            int d=motorLeft.getCurrentPosition();
+            if (c == d) {
                 motorLeft.setPower(0.0);
 
             }
@@ -115,9 +114,9 @@ public class AutonomousTutorial extends LinearOpMode {
     public void TurnLeft( double degrees, double power, boolean turnStyle)
     {
         double turn = ROBOT_CIRC * (degrees / 360);
-        if (turnStye == true)
+        if (turnStyle == true)
         {
-            motorLeft.setDirection(DcMotor.Direction.FOREWARD);
+            motorLeft.setDirection(DcMotor.Direction.FORWARD);
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorRight.setPower(power);
             motorRight.setTargetPosition(getEncoderClicks(turn));
@@ -148,7 +147,7 @@ public class AutonomousTutorial extends LinearOpMode {
 
 
         double turn = ROBOT_CIRC * (degrees / 360);
-        if (turnStye == true) {
+        if (turnStyle == true) {
             motorRight.setDirection(DcMotor.Direction.REVERSE);
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorRight.setPower(power);
