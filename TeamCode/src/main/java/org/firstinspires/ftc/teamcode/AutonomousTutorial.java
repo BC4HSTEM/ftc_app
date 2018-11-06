@@ -90,6 +90,25 @@ public class AutonomousTutorial extends LinearOpMode {
             idle();
         }
 
+        while(motorLeft.isBusy() && motorRight.isBusy())
+        {
+            a=motorRight.getPosition();
+            Thread.sleep(200);
+            b=motorRight.getPosition();
+            if (a == b) {
+                motorRight.setPower(0.0);
+
+            }
+
+            a=motorLeft.getPosition();
+            Thread.sleep(200);
+            b=motorLeft.getPosition();
+            if (a == b) {
+                motorLeft.setPower(0.0);
+
+            }
+        }
+
 
     }
 
