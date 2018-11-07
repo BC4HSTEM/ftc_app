@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+// import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /* ARM LIFT ALTERNATE : UNTESTED & NOT BUILT
   ----------------------------------------------------------
@@ -50,13 +52,14 @@ public class TeleopTutorial extends LinearOpMode {
         
         // Setup Telemetry, will not clear after cycle, setup reusable items for output
         telemetry.setAutoClear(false);
-        Telemetry.Item armLeftPosition = telemetry.addData("Left Arm Position", armLeft.getCurrentPosition());
+        Telemetry.Item armLeftPosition = telemetry.addData("Left Arm Position", armLeft.getCurrentPosition() );
 
 
         //code before waitForStart is run when Init button is pressed
-        while(!isStarted){
+        while( !isStarted() ){
           //print encoder counts to telemetry while we manually move the arm
           armLeftPosition.setValue(armLeft.getCurrentPosition());
+
           telemetry.update();
         }
         
@@ -64,11 +67,11 @@ public class TeleopTutorial extends LinearOpMode {
 
 
         int armTarget = 0;
-        double armSpeed = 0.0;
+        double armSpeed = 0;
         String armCurrentDirection = "up";
         int maxArmEncoderHeight = 300;
         
-        while (isOpModeActive()) {
+        while ( opModeIsActive() ) {
           
           /**
            * BEGIN ARM LIFT TEST 1
@@ -85,7 +88,7 @@ public class TeleopTutorial extends LinearOpMode {
             armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             armTarget = 200;
             armSpeed = 0.98; 
-            armCurrentDirection = 'up'; 
+            armCurrentDirection = "up";
             
             armLeft.setPower(armSpeed);
             armLeft.setTargetPosition(armTarget);
@@ -95,7 +98,7 @@ public class TeleopTutorial extends LinearOpMode {
             armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             armTarget = 0;
             armSpeed = -0.1;  // From my research, negative is ignore, so I don't understand why this *seems* to work  
-            armCurrentDirection = 'down'; 
+            armCurrentDirection = "down";
             
             armLeft.setPower(armSpeed);
             armLeft.setTargetPosition(armTarget);
@@ -112,8 +115,9 @@ public class TeleopTutorial extends LinearOpMode {
              * Gamepad 1 btn B - arm lift down
              *
              * !!! concerned about setting power to zero at bottom and accurately tracking the down position
+             *
              **/
-          
+
           if (gamepad1.dpad_up){ // Arm UP
             
             armLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -129,7 +133,7 @@ public class TeleopTutorial extends LinearOpMode {
             
             armLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             
-            armTarget = Math.min(0, Math.round( armLeft.getCurrentPosition() - 50 );
+            armTarget = Math.min(0, Math.round( armLeft.getCurrentPosition() - 50 ));
             armSpeed = 0.1;
             armCurrentDirection = "down"; 
             
@@ -141,12 +145,11 @@ public class TeleopTutorial extends LinearOpMode {
                   
                             
           /* Remove Power from the Arm Motor if motor is close to 0 position, arm should drop */
-          if ( armCurrentDirection === "down" && armLeft.getTargetPosition() < 5 ){
-            armSpeed = 0.0;  
+          if (armCurrentDirection.equals("down") && armLeft.getTargetPosition() <= 5 ){
             armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
           }
           
-          /** END ARM LIFT **/
+          /* END ARM LIFT */
           
           
           idle();
