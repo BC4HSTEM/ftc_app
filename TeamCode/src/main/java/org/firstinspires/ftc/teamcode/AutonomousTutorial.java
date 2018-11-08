@@ -25,11 +25,12 @@ public class AutonomousTutorial extends LinearOpMode {
     private static final double ARM_EXTENDED_POSITION = 0.8;
     private static final int DRIVE_ENCODER_CLICKS = 2240;
     private static final int ARM_ENCODER_CLICKS = 2240;
-    private static final double ROBOT_DIAM = 10.2; // Robot diameter in cm
+    private static final double ROBOT_DIAM = 40.0; // Robot diameter in cm
     private static final double ROBOT_CIRC = ROBOT_DIAM * Math.PI;
-    private static final double WHEEL_DIAM = 3.7; //Wheel diameter in cm
+    private static final double WHEEL_DIAM = 10.0; //Wheel diameter in cm
     private static final double WHEEL_CIRC = WHEEL_DIAM * Math.PI;
     private static final double CLICKS_PER_CM = DRIVE_ENCODER_CLICKS / WHEEL_CIRC;
+    private static final double DRIVE_GEAR_RATIO = 1/2; // This may need to change
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -62,7 +63,7 @@ public class AutonomousTutorial extends LinearOpMode {
 
     public static int getEncoderClicks (double distanceInCM) // Distance in centimeters
      {
-        int outputClicks = (int)Math.floor(CLICKS_PER_CM * distanceInCM);
+        int outputClicks = (int)Math.floor((CLICKS_PER_CM * distanceInCM)* DRIVE_GEAR_RATIO);
 
         return outputClicks;
     }
@@ -136,7 +137,8 @@ public class AutonomousTutorial extends LinearOpMode {
 
         while (opModeIsActive() && motorRight.isBusy())
         {
-            telemetry.addData("encoder-turn-left" , motorRight.getCurrentPosition() + "busy" + motorRight.isBusy());
+            telemetry.addData("encoder-turn-left" , motorRight.getCurrentPosition()
+                    + "busy" + motorRight.isBusy());
             telemetry.update();
             idle();
         }
