@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -33,29 +34,34 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
   
 */
 
-@TeleOp(name = "Lift Arm Tests")
+@TeleOp(name = "Arm Lift Test: faux PID")
 public class TeleopTutorial extends LinearOpMode {
     
     private DcMotor armLeft;
-    private DcMotor armRight;
+    // private DcMotor armRight;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
         armLeft = hardwareMap.dcMotor.get("armLeft");
         
-        // Set arm encoders to 0
+        // Set arm encoders to 0, set mode and Zero Power Behavior
         armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        
-        // Zero Power Behavior 
+        armLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         // Setup Telemetry, will not clear after cycle, setup reusable items for output
         telemetry.setAutoClear(false);
         Telemetry.Item armLeftPosition = telemetry.addData("Left Arm Position", armLeft.getCurrentPosition() );
 
+        // ARM LIFT
+        int ARM_ENCODER_COUNT  = 2400;
+        int ARM_TURN_ANGLE = 240;
+        int MAX_ARM_ENCODER_COUNT = Math.round( ARM_ENCODER_COUNT * (ARM_TURN_ANGLE/360) );
+        String armCurrentDirection = "up";
 
-        //code before waitForStart is run when Init button is pressed
+
+        // Execute Code Before waitForStart is run and after Init button is pressed
         while( !isStarted() ){
           //print encoder counts to telemetry while we manually move the arm
           armLeftPosition.setValue(armLeft.getCurrentPosition());
@@ -63,102 +69,76 @@ public class TeleopTutorial extends LinearOpMode {
           telemetry.update();
         }
         
-        //code after waitForStart is run when the start button is pressed
+        // Code after waitForStart is run when the start button is pressed
 
 
-        int armTarget = 0;
-        double armSpeed = 0;
-        String armCurrentDirection = "up";
-        int maxArmEncoderHeight = 300;
-        
         while ( opModeIsActive() ) {
-          
-          /**
-           * BEGIN ARM LIFT TEST 1
-           * using RUN_TO_POSITION
-           
-           * Gamepad 1 btn A - arm lift up
-           * Gamepad 1 btn B - arm lift down
-           * 
-           * !!! concerned about reliability of encoder count as it doesn't seem to be tracking accurately  
-          **/
-          
-          if (gamepad1.a){ // Arm UP
-
-            armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armTarget = 200;
-            armSpeed = 0.98; 
-            armCurrentDirection = "up";
-            
-            armLeft.setPower(armSpeed);
-            armLeft.setTargetPosition(armTarget);
-            
-          } else if (gamepad1.b){ // Arm DOWN
-            
-            armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armTarget = 0;
-            armSpeed = -0.1;  // From my research, negative is ignore, so I don't understand why this *seems* to work  
-            armCurrentDirection = "down";
-            
-            armLeft.setPower(armSpeed);
-            armLeft.setTargetPosition(armTarget);
-          }
-
-
 
 
             /**
              * BEGIN ARM LIFT TEST 2
-             * using RUN_USING_ENCODER
+             * using RUN_WITHOUT_ENCODER
 
-             * Gamepad 1 btn A - arm lift up
-             * Gamepad 1 btn B - arm lift down
+             * Gamepad 1 dpad up- arm lift up
+             * Gamepad 1 dpad down - arm lift down
              *
              * !!! concerned about setting power to zero at bottom and accurately tracking the down position
              *
-             **/
+             * **/
 
-          if (gamepad1.dpad_up){ // Arm UP
-            
-            armLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            
-            armTarget = Math.max(0, Math.min(  Math.round( armLeft.getCurrentPosition() + 50 ), maxArmEncoderHeight));
-            armSpeed = 0.98; 
-            armCurrentDirection = "up"; 
-            
-            armLeft.setPower(armSpeed);
-            armLeft.setTargetPosition(armTarget);
-            
-          } else if (gamepad1.dpad_down){ // Arm DOWN
-            
-            armLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            
-            armTarget = Math.min(0, Math.round( armLeft.getCurrentPosition() - 50 ));
-            armSpeed = 0.1;
-            armCurrentDirection = "down"; 
-            
-            armLeft.setPower(armSpeed);
-            armLeft.setTargetPosition(armTarget);
-          }
-          
-                  
-                  
-                            
-          /* Remove Power from the Arm Motor if motor is close to 0 position, arm should drop */
-          if (armCurrentDirection.equals("down") && armLeft.getTargetPosition() <= 5 ){
-            armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-          }
-          
-          /* END ARM LIFT */
-          
-          
-          idle();
-          
-          // Arm Lift Telemetry
-          if( armLeft.isBusy() ){
-            armLeftPosition.setValue(armLeft.getCurrentPosition());
-            telemetry.update();
-          }
+            // Arm UP
+            if (gamepad1.dpad_up){
+                if(!armLeft.isBusy()) {
+                    armCurrentDirection = "up";
+                    armLeft.setPower(1); // Positive power pushes arm up
+                }
+
+            // Arm DOWN
+            } else if (gamepad1.dpad_down){
+                if(!armLeft.isBusy()) {
+                    armCurrentDirection = "down";
+                    armLeft.setPower(0.5); // Positive power should apply resistance to gravity but allow arm to drop
+                }
+            }
+
+
+            // Arm Drop, ease braking power
+            if (armCurrentDirection.equals("down") && armLeft.isBusy() ){
+
+                if( armLeft.getCurrentPosition() <= 10 ) {
+                    // Stop power to arm and reset encoders, arm drops, 10 example margin of error?
+                    armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                } else if(armLeft.getCurrentPosition() <= Math.round(MAX_ARM_ENCODER_COUNT * 0.3337) ){
+                    // Lower the resistance to gravity at 1/3 descent
+                    armLeft.setPower(0.1);
+
+                } else if(armLeft.getCurrentPosition() <= Math.round(MAX_ARM_ENCODER_COUNT * 0.6667) ){
+                    // Lower the resistance to gravity at 2/3 descent
+                    armLeft.setPower(0.25);
+
+                }
+
+            } else if (armCurrentDirection.equals("down") && armLeft.isBusy() ){
+
+                // we need nearly 100% power to keep the arm up, test further
+                if( armLeft.getCurrentPosition() >= MAX_ARM_ENCODER_COUNT ) {
+                    armLeft.setPower(0.9);
+                }
+
+            }
+
+
+            // END ARM LIFT
+
+
+              idle();
+
+              // Arm Lift Telemetry
+              if( armLeft.isBusy() ){
+                armLeftPosition.setValue(armLeft.getCurrentPosition());
+                telemetry.update();
+              }
           
         }
     }
