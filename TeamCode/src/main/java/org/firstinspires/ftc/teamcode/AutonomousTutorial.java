@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +21,8 @@ public class AutonomousTutorial extends LinearOpMode {
     private DcMotor armRight;
 
     private Servo armServo;
+    // Detector object
+    private GoldAlignDetector detector;
 
     //Static Variables
 
@@ -52,10 +57,55 @@ public class AutonomousTutorial extends LinearOpMode {
         armServo = hardwareMap.servo.get("armServo");
 
         armServo.setPosition(ARM_RETRACTED_POSITION);
+        telemetry.addData("Status", "DogeCV 2018.0 - Gold Align Example");
+
+        // Set up detector
+        detector = new GoldAlignDetector(); // Create detector
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
+        detector.useDefaults(); // Set detector to use default settings
+
+        // Optional tuning
+        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignPosOffset = 0; // How far from center frame to offset this alignment zone.
+        detector.downscale = 0.4; // How much to downscale the input frames
+
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.maxAreaScorer.weight = 0.005; //
+
+        detector.ratioScorer.weight = 5; //
+        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
+
+        detector.enable(); // Start the detector!
 
         //code before waitForStart is run when Init button is pressed
         waitForStart();
         //code after waitForStart is run when the start button is pressed
+
+        TurnLeft(50, .5, true);
+        Drive(116.84, .5);
+        TurnRight(90, .5, true);
+        Drive(93.98,.5);
+        TurnRight(180, .5, true);
+        //trophy arm code
+        Drive(92.98, .5);
+        TurnLeft(90, .5, true);
+        Drive(116.84, .5);
+        TurnLeft(90,.5,true);
+        Drive(116.84,.5);
+        TurnRight(90,.5,true);
+        Drive( 106.68,1);
+
+
+        /* PSEUDOCODE: *********
+        The detector has two features we can use just based on sample code: getAligned(0
+        returns a boolean, getXPosition(0 returns a number from 0 t0 640 depending on the cube's
+        position. So the code should read something like :
+        while getAligned is false, getXPosition. Depending on whether it indicates left or right,
+        turn the robot slightly to the left or the right. Once getAligned is true, move forward.
+        PSEUDOCODE **************
+         */
+
         Drive(-30, -0.8);
     }
 
@@ -173,6 +223,8 @@ public class AutonomousTutorial extends LinearOpMode {
         }
 
     }
+
+    //-
 
 
 
