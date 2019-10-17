@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -10,6 +11,8 @@ backwards, commend out the line motorLeft.setDirection(DcMotor.Direction.REVERSE
 the line motorRight.setDirection(DcMotor.Direction.REVERSE);
 */
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Auto01", group = "Autonomous")
+@Disabled
+
 public class Autonomous extends LinearOpMode {
 
     private DcMotor motorLeft;

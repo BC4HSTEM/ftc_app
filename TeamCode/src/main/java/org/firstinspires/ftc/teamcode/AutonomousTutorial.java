@@ -4,6 +4,7 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,6 +14,8 @@ backwards, commend out the line motorLeft.setDirection(DcMotor.Direction.REVERSE
 the line motorRight.setDirection(DcMotor.Direction.REVERSE);
 */
 @Autonomous(name = "Auto01", group = "Autonomous")
+@Disabled
+
 public class AutonomousTutorial extends LinearOpMode {
 
     private DcMotor motorLeft;
